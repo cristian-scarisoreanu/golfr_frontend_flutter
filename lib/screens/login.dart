@@ -7,10 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:golfr_flutter/models/login_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void initStorage() {}
+import '../utils/appbar.dart';
 
 class MyLogin extends StatefulWidget {
-  const MyLogin({Key? key}) : super(key: key);
+  final bool loggedIn;
+  final int? id;
+  final String? token;
+  const MyLogin({Key? key, required this.loggedIn, this.id, this.token})
+      : super(key: key);
 
   @override
   _MyLoginState createState() => _MyLoginState();
@@ -105,102 +109,84 @@ class _MyLoginState extends State<MyLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          leading: Image.asset(
-            'images/logo.png',
-            fit: BoxFit.cover,
-            color: Colors.white,
-          ),
-          centerTitle: false,
-          titleSpacing: 0,
-          title: const Text(
-            "Golfr",
-            style: TextStyle(fontSize: 25),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MyLogin())),
-              icon: const Icon(Icons.login),
-              iconSize: 27,
-              color: Colors.white,
-            ),
-          ],
-        ),
-        body: Center(
-            child: Container(
-                padding: const EdgeInsets.all(60),
-                child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Login", style: TextStyle(fontSize: 35)),
-                        const SizedBox(
-                          width: 35,
-                          height: 35,
-                        ),
-                        TextFormField(
-                            validator: (email) {
-                              if (email!.isEmpty) {
-                                return 'Please enter your email address';
+    if (widget.loggedIn == true) {
+      return MyFeed(id: widget.id, token: widget.token);
+    } else {
+      return Scaffold(
+          appBar: MyAppBar(),
+          body: Center(
+              child: Container(
+                  padding: const EdgeInsets.all(60),
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Login", style: TextStyle(fontSize: 35)),
+                          const SizedBox(
+                            width: 35,
+                            height: 35,
+                          ),
+                          TextFormField(
+                              validator: (email) {
+                                if (email!.isEmpty) {
+                                  return 'Please enter your email address';
+                                }
+                                if (!email.contains('@')) {
+                                  return 'Please enter a valid email address';
+                                }
+                                return null;
+                              },
+                              onSaved: (email) => _loginRequest.email = email!,
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email),
+                              )),
+                          TextFormField(
+                            validator: (password) {
+                              if (password!.isEmpty) {
+                                return 'Please enter your password';
                               }
-                              if (!email.contains('@')) {
-                                return 'Please enter a valid email address';
+
+                              if (password.length < 6) {
+                                return 'Password must have at least 6 characters';
                               }
+
                               return null;
                             },
-                            onSaved: (email) => _loginRequest.email = email!,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              prefixIcon: Icon(Icons.email),
-                            )),
-                        TextFormField(
-                          validator: (password) {
-                            if (password!.isEmpty) {
-                              return 'Please enter your password';
-                            }
-
-                            if (password.length < 6) {
-                              return 'Password must have at least 6 characters';
-                            }
-
-                            return null;
-                          },
-                          onSaved: (password) =>
-                              _loginRequest.password = password!,
-                          decoration: InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: const Icon(Icons.password),
-                              suffixIcon: _hiddenPassword
-                                  ? IconButton(
-                                      onPressed: _changeVisibility,
-                                      icon: const Icon(Icons.visibility_off),
-                                      tooltip: 'Hide password',
-                                    )
-                                  : IconButton(
-                                      onPressed: _changeVisibility,
-                                      icon: const Icon(Icons.visibility),
-                                      tooltip: 'Show password',
-                                    )),
-                          obscureText: _hiddenPassword,
-                          showCursor: false,
-                        ),
-                        const SizedBox(
-                          width: 35,
-                          height: 35,
-                        ),
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.green,
-                                shadowColor: Colors.black),
-                            onPressed: _submit,
-                            child: const Text("Login",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white)))
-                      ],
-                    )))));
+                            onSaved: (password) =>
+                                _loginRequest.password = password!,
+                            decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: const Icon(Icons.password),
+                                suffixIcon: _hiddenPassword
+                                    ? IconButton(
+                                        onPressed: _changeVisibility,
+                                        icon: const Icon(Icons.visibility_off),
+                                        tooltip: 'Hide password',
+                                      )
+                                    : IconButton(
+                                        onPressed: _changeVisibility,
+                                        icon: const Icon(Icons.visibility),
+                                        tooltip: 'Show password',
+                                      )),
+                            obscureText: _hiddenPassword,
+                            showCursor: false,
+                          ),
+                          const SizedBox(
+                            width: 35,
+                            height: 35,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.green,
+                                  shadowColor: Colors.black),
+                              onPressed: _submit,
+                              child: const Text("Login",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white)))
+                        ],
+                      )))));
+    }
   }
 }

@@ -39,7 +39,7 @@ Future<void> forgetUser() async {
 }
 
 class MyApp extends StatefulWidget {
-  final status;
+  final bool status;
   final id;
   final token;
 
@@ -59,9 +59,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: widget.status
-          ? MyFeed(id: widget.id, token: widget.token)
-          : const MyLogin(),
+      home: MyLogin(loggedIn: widget.status,id: widget.id,token: widget.token,),
       debugShowCheckedModeBanner: false,
     );
   }

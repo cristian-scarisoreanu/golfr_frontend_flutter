@@ -7,6 +7,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'package:intl/intl.dart';
 import '../models/scores.dart';
+import '../utils/appbar.dart';
 import 'login.dart';
 
 class MyScores extends StatefulWidget {
@@ -278,8 +279,12 @@ class _MyFeedState extends State<MyFeed> {
 
   Future<void> _logout() async {
     await forgetUser();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MyLogin()));
+    Navigator.of(context).pushAndRemoveUntil(
+        // the new route
+      MaterialPageRoute(
+          builder: (BuildContext context) => const MyLogin(loggedIn: false),
+        ),
+    (Route route) => false);
   }
 
   @override
@@ -317,19 +322,7 @@ class _MyFeedState extends State<MyFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          leading: Image.asset(
-            'images/logo.png',
-            fit: BoxFit.cover,
-            color: Colors.white,
-          ),
-          centerTitle: false,
-          titleSpacing: 0,
-          title: const Text(
-            "Golfr ",
-            style: TextStyle(fontSize: 25),
-          ),
+        appBar: MyAppBar(
           actions: [
             IconButton(
               onPressed: _logout,
